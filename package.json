@@ -1,0 +1,22 @@
+{
+  "name": "tc12180testcafe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "001tc12180_on_on_on_em_any_can.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volodymyrdmytrenko/tc12180testcafe.git"
+  },
+  "author": "Volodymyr Dmytrenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/volodymyrdmytrenko/tc12180testcafe/issues"
+  },
+  "homepage": "https://github.com/volodymyrdmytrenko/tc12180testcafe#readme",
+  "dependencies": {
+    "testcafe": "^1.6.1"
+  }
+}
