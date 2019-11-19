@@ -34,15 +34,15 @@ let main_matrix = [["for_em", "for_mn", "for_hr", "role", "any", "oi", "all", "d
                        ["false", "true", "true", "hr", "can", "can", "can", "skip", "skip"],  // 31
                        ["false", "true", "true", "hrmn", "can", "can", "can", "can", "can"]];  // 32
 
-let users = {em : 'Martha.Robinson@email.com',            // employee
-            any : 'Jenny.Thompson@email.com',             // employee1
-            oi : 'Gerry.Harris@email.com',                // OI user
-            mn : 'Dermot.Jackson@email.com',              // manager
-            sub : 'David.Wilson@email.com',               // sub
-            hr : 'alison.johnson@email.com',              // HR
-            hrmn : 'Jamie.Duggan@email.com',              // HR+manager
-            dir : 'Tina.Delaney@email.com',               // HR+manager direct
-            admin : 'Barry.Deegan@email.com'};            // admin
+let users = {'em' : 'Martha.Robinson@email.com',            // employee
+            'any' : 'Jenny.Thompson@email.com',             // employee1
+            'oi' : 'Gerry.Harris@email.com',                // OI user
+            'mn' : 'Dermot.Jackson@email.com',              // manager
+            'sub' : 'David.Wilson@email.com',               // sub
+            'hr' : 'alison.johnson@email.com',              // HR
+            'hrmn' : 'Jamie.Duggan@email.com',              // HR+manager
+            'dir' : 'Tina.Delaney@email.com',               // HR+manager direct
+            'admin' : 'Barry.Deegan@email.com'};            // admin
 
 
 let url = 'http://stage.mytandem.eu';
@@ -52,6 +52,7 @@ let pw = 'pass';
 let testNumber = 0;
 let testName = '';
 let destination = '';
+let destName = [];
 
 
 fixture `tc12180`
@@ -83,8 +84,9 @@ class AdminPage {
 
 class AssignGoalPage {
     constructor () {
-        this.assignGoal         = Selector('#e2e-assign-goal');
-        this.sendTo             = Selector('#Sendto\:');
+        this.assignGoal         = Selector('#e2e-assign-goal')
+        // this.sendTo             = Selector('#Sendto:');
+        this.Sendto             = getElementById('#Sendto\:')
         this.foundItem          = Selector('#found-item');
         this.type               = Selector('#e2e-set-goal-type');
         this.typeSelect         = Selector('.tandem-multiselect__menu-list').withText('Development');
@@ -98,7 +100,7 @@ class AssignGoalPage {
 
 const login_page = new LoginPage();
 const admin_page = new AdminPage();
-const assignGoal_page = new AdminPage();
+const assignGoal_page = new AssignGoalPage();
 
 for (let i=1; i<=32; i++ ) {
     for (let j=4; j<=8; j++) {
@@ -133,14 +135,14 @@ for (let i=1; i<=32; i++ ) {
             .typeText(login_page.password, pw)
             .click(login_page.loginButton)
             .expect(Selector('#e2e-user-profile').exists).ok()
-            
+
             // Go Administration -> Goal
             .click(admin_page.administration)
             .click(admin_page.goals)
             const em_page = await admin_page.AssignGoalUsr.getAttribute('data-value')
             const mn_page = await admin_page.AssignGoalMng.getAttribute('data-value')
             const hr_page = await admin_page.AssignGoalHR.getAttribute('data-value')
-            
+
             // Settings fo Goals
             let switched = false
             if ( em_page != main_matrix[i][0]) {
@@ -173,8 +175,8 @@ for (let i=1; i<=32; i++ ) {
                 .typeText(login_page.password, pw)
                 .click(login_page.loginButton)
                 .expect(Selector('#e2e-user-profile').exists).ok()
-            
-            // If user have not menu Set Goal 
+
+            // If user have not menu Set Goal
             if (main_matrix[i][j] == 'no') {
                 await t
                     .expect(admin_page.setGoal.exists).notOk()
@@ -183,11 +185,15 @@ for (let i=1; i<=32; i++ ) {
             } else if (main_matrix[i][j] == 'can') {
                 if (main_matrix[0][j] == 'any') {
                     destination = users['any'];
+                    destName = destination.split('.');
+                    console.log(destination);
+                    console.log(destName[0]);
+                    console.log(111111111);
                     // console.log(destination);
                     await t
                         .click(assignGoal_page.assignGoal)
                         // set destination
-                        .typeText(assignGoal_page.sendTo, destination)
+                        .typeText(assignGoal_page.sendTo, 'Jenny')
                         .click(assignGoal_page.foundItem)
                         // set date
                         .typeText(assignGoal_page.datePriority, '31/12/2030')
