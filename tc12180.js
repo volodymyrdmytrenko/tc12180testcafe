@@ -1,6 +1,12 @@
+// ##########################################################################
+// #  TANDEM PROJECT
+// #  e2e test by test case 12180
+// #  Volodymyr.Dmytrenko@arvosoftware.com
+// ##########################################################################
+
 import { Selector } from 'testcafe';
 import page from './page-model';
-import { tstLogin, tstLogout } from './helper';
+import { tstLogin, tstLogout, tstAdminSettings } from './helper';
 
 
 let main_matrix = [["for_em", "for_mn", "for_hr", "role", "any", "oi", "all", "dir", "sub"],
@@ -39,6 +45,7 @@ let main_matrix = [["for_em", "for_mn", "for_hr", "role", "any", "oi", "all", "d
 
 let users = {'em' : 'Martha.Robinson@email.com',            // employee
             'any' : 'Jenny.Thompson@email.com',             // employee1
+            'all' : 'Jenny.Thompson@email.com',             // employee1
             'oi' : 'Gerry.Harris@email.com',                // OI user
             'mn' : 'Dermot.Jackson@email.com',              // manager
             'sub' : 'David.Wilson@email.com',               // sub
@@ -54,21 +61,18 @@ let pw = 'pass';
 // let usr = 'Martha.Robinson@email.com';
 let testNumber = 0;
 let testName = '';
+let testNameDate = '';
 let destination = '';
-let destName = [];
 
 
 fixture `tc12180`
     .page `${url}`;
 
-
-const page = new Page();
-
 for (let i=1; i<=32; i++ ) {
     for (let j=4; j<=8; j++) {
-        if (main_matrix[i][j] == 'skip') { break }
-        // Test name create
-        testName = ('00' + ++testNumber).slice(-3) + '_'
+
+        // Start test
+        let testName = ('00' + ++testNumber).slice(-3) + '_'
         if (main_matrix[i][0] == 'true') {
             testName = testName + 'on_'
         } else {
@@ -84,79 +88,44 @@ for (let i=1; i<=32; i++ ) {
         } else {
             testName = testName + 'off_'
         };
-        testName = testName + main_matrix[i][3] + '_' + 
-                    main_matrix[0][j] + '_' + main_matrix[i][j] + Date.now();
-        console.log(testName);
+        testName = testName + main_matrix[i][3] + '_' + main_matrix[0][j] + '_' + main_matrix[i][j];
 
-        // Start test
         test(`tc12180_${testName}`, async t => {
-            await t
-            // Login as admin
-            .typeText(page.dataBase, db)
-            .click(page.continueButton)
-            .typeText(page.userName, users['admin'])
-            .typeText(page.password, pw)
-            .click(page.loginButton)
-            .expect(Selector('#e2e-user-profile').exists).ok()
 
-            // Go Administration -> Goal
-            .click(page.administration)
-            .click(page.goals)
-            const em_page = await page.AssignGoalUsr.getAttribute('data-value')
-            const mn_page = await page.AssignGoalMng.getAttribute('data-value')
-            const hr_page = await page.AssignGoalHR.getAttribute('data-value')
-
-            // Settings fo Goals
-            let switched = false
-            if ( em_page != main_matrix[i][0]) {
-                await t.click(page.AssignGoalUsr);
-                switched = true;
-            };
-            if (mn_page != main_matrix[i][1]) {
-                await t.click(page.AssignGoalUsr)
-                switched = true;
-            };
-            if (hr_page != main_matrix[i][2]) {
-                await t.click(page.AssignGoalHR)
-                switched = true;
-            };
-            if (switched) {
-                await t.click(page.confirm)
-            };
-
-            // Admin logout
-            await tstLogout()
-            // await t
-            //     .click(page.profile)
-            //     .click(page.logout)
-            //     .click(page.logoutConfirm)
-
-            // Login as initial user
-            await tstLogin(users[main_matrix[i][3]],pw)
-            // await t
-            //     .typeText(page.userName, users[main_matrix[i][3]])
-            //     .typeText(page.password, pw)
-            //     .click(page.loginButton)
-            //     .expect(Selector('#e2e-user-profile').exists).ok()
-
-            // If user have not menu Set Goal
-            if (main_matrix[i][j] == 'no') {
-                await t
-                    .expect(page.setGoal.exists).notOk()
-
-            // If user can assign Goal
-            } else if (main_matrix[i][j] == 'can') {
-                if (main_matrix[0][j] == 'any') {
-                    destination = users['any'];
-                    destName = destination.split('.');
-                    console.log(destination);
-                    console.log(destName[0]);
-                    console.log(111111111);
-                    // console.log(destination);
+            switch(main_matrix[i][j]) {
+                case 'skip':
+                    break;
+                case 'no':
+                    await t.expect(page.setGoal.exists).notOk();
+                    break;
+                case 'can':
+                    testNameDate = testName + '_' + Date.now();
+                    let tstSearch = '';
+                    switch (main_matrix[0][j]) {
+                        case 'oi':
+                            tstSearch = 'Finance';
+                            break;
+                        case 'all':
+                            tstSearch = 'All Company';
+                            break;
+                        case 'dir':
+                            tstSearch = 'My direct reports';
+                            break;
+                        default:
+                            tstSearch = main_matrix[i][j];
+                    }
+                    // Login as admin
+                    await tstLogin(users['admin'],pw,db,true);
+                    // Go Administration -> Goal
+                    await tstAdminSettings(main_matrix[i][0], main_matrix[i][1], main_matrix[i][2]);
+                    // Admin logout
+                    await tstLogout();
+                    // Login as initial user
+                    await tstLogin(users[main_matrix[i][3]],pw);
                     await t
                         .click(page.assignGoal)
                         // set destination
-                        .typeText(page.sendTo, 'Jenny')
+                        .typeText(page.sendTo, users[main_matrix[0][j]].split('.')[0])
                         .click(page.foundItem)
                         // set date
                         .typeText(page.datePriority, '31/12/2030')
@@ -165,10 +134,28 @@ for (let i=1; i<=32; i++ ) {
                         .click(page.typeSelect)
                         // set Title
                         .click(page.title)
-                        .typeText(page.titleContent, testName)
+                        .typeText(page.titleContent, testNameDate)
+                        // send Goal
                         .click(page.send)
                         .click(page.confirm)
-                }
+                        // Search Goal
+                        .typeText(page.mainSearch, testNameDate)
+                        .click(page.foundItem)
+                    // user logout
+                    await tstLogout()
+                    // Login as destination user
+                    await tstLogin(users[main_matrix[0][j]], pw);
+                    await t
+                        .click(page.notification)
+                        .click(page.allNotification)
+                        // .click(page.foundGoal, testNameDate)
+                    await tstLogout()    
+                    break;
+                case 'cannot':
+                    // Not implemented yet...
+                    break;
+                default:
+                    console.log('Error in main_matrix');
             }
         })
     }

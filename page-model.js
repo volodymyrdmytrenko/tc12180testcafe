@@ -1,7 +1,17 @@
+// ##########################################################################
+// #  TANDEM PROJECT
+// #  e2e test by test case 12180
+// #  Volodymyr.Dmytrenko@arvosoftware.com
+// ##########################################################################
+
 import { Selector } from 'testcafe';
 
 class Page {
-    constructor () {
+    constructor (text) {
+        const elementWithClassName = Selector(id => {
+            return document.getElementsByClassName(id);
+        });
+
         // Login
         this.dataBase               = Selector('#e2e-company-name');
         this.continueButton         = Selector('#e2e-continue-button');
@@ -20,8 +30,8 @@ class Page {
         this.saveSetting            = Selector('.tandem-btn').withText('Save');
         // Assign Goals
         this.assignGoal             = Selector('#e2e-assign-goal')
-        this.sendTo                 = getElementById('#Sendto\:')
-        this.foundItem              = Selector('#found-item');
+        this.sendTo                 = elementWithClassName('e2e-search-field')
+        this.foundItem              = elementWithClassName('found-item');
         this.type                   = Selector('#e2e-set-goal-type');
         this.typeSelect             = Selector('.tandem-multiselect__menu-list').withText('Development');
         this.datePriority           = Selector('#newPriorityDueDate');
@@ -29,6 +39,10 @@ class Page {
         this.titleContent           = Selector('.public-DraftEditor-content').nth(0);
         this.send                   = Selector('.tandem-btn').withText('Send');
         this.confirm                = Selector('#e2e-primary-button');
+        this.mainSearch             = Selector('#e2e-main-search-field');
+        this.notification           = Selector('#e2e-desktop-notifications');
+        this.allNotification        = Selector('#e2e-view-all-notifications');
+        // this.findGoal               = Selector('#p').withText(text);
 
     }
 };

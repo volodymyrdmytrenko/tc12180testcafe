@@ -4,7 +4,9 @@
   "description": "",
   "main": "001tc12180_on_on_on_em_any_can.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "testcafe chrome tc12180.js",
+	"run": "testcafe chrome tc12180.js",
+	"start": "testcafe chrome tc12180.js"
   },
   "repository": {
     "type": "git",
