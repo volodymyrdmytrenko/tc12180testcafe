@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/volodymyrdmytrenko/tc12180testcafe#readme",
   "dependencies": {
-    "testcafe": "^1.6.1"
+    "testcafe": "^1.20.1"
   }
 }
